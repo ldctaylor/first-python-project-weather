@@ -24,7 +24,7 @@ def convert_date(iso_string):
     Returns:
         A date formatted like: Weekday Date Month Year e.g. Tuesday 06 July 2021
     """
-    #First I have taken the date string and converted it to a datetime object using .strptime(): 
+    #First I have taken the date string and converted it to a datetime object using .strptime():
     date = datetime.strptime(iso_string,"%Y-%m-%dT%H:%M:%S%z")
     #Then format it to display in the way required using .strftime().
     return date.strftime("%A %d %B %Y")
@@ -69,10 +69,10 @@ def load_data_from_csv(csv_file):
         imported_file = list(csv.reader(file))
         #remove empty rows
         imported_file = [_ for _ in imported_file if _ != []]
-        #convert string temps in second and third columns into integers:
+        #convert string temps in second and third columns into floats:
         for i in range(1,len(imported_file)):
             for j in range(1,3):
-                imported_file[i][j] = int(imported_file[i][j]) 
+                imported_file[i][j] = float(imported_file[i][j])
         #remove header row
         return imported_file[1:]
 
@@ -84,8 +84,11 @@ def find_min(weather_data):
     Returns:
         The minium value and it's position in the list.
     """
-    pass
-
+    # return the last occurence of the min value and its index position, checking first that the list is not empty
+    if weather_data != []:
+            return float(min(weather_data)),(len(weather_data) - 1 - weather_data[::-1].index(min(weather_data)))
+    else:
+        return ()
 
 def find_max(weather_data):
     """Calculates the maximum value in a list of numbers.
@@ -95,8 +98,12 @@ def find_max(weather_data):
     Returns:
         The maximum value and it's position in the list.
     """
-    pass
 
+    # return the last occurence of the max value and its index position, checking first that the list is not empty
+    if weather_data != []:
+            return float(max(weather_data)),(len(weather_data) - 1 - weather_data[::-1].index(max(weather_data)))
+    else:
+        return ()
 
 def generate_summary(weather_data):
     """Outputs a summary for the given weather data.
@@ -106,8 +113,11 @@ def generate_summary(weather_data):
     Returns:
         A string containing the summary information.
     """
-    pass
+    days = len(weather_data)
+    daily_min = [_[1] for _ in weather_data]
+    daily_max = [_[2] for _ in weather_data]
 
+    return f"{days} Day Overview\n  The lowest temperature will be {format_temperature(convert_f_to_c(find_min(daily_min)[0]))}, and will occur on {convert_date(weather_data[find_min(daily_min)[1]][0])}.\n  The highest temperature will be {format_temperature(convert_f_to_c(find_max(daily_max)[0]))}, and will occur on {convert_date(weather_data[find_max(daily_max)[1]][0])}.\n  The average low this week is {format_temperature(convert_f_to_c(calculate_mean(daily_min)))}.\n  The average high this week is {format_temperature(convert_f_to_c(calculate_mean(daily_max)))}.\n"
 
 def generate_daily_summary(weather_data):
     """Outputs a daily summary for the given weather data.
@@ -117,4 +127,9 @@ def generate_daily_summary(weather_data):
     Returns:
         A string containing the summary information.
     """
-    pass
+    #iterate through each sublist and prepare a string that contains a daily summary for each sublist, concatenate the string together using x = x + new
+    daily_summary = ""
+    for _ in range(len(weather_data)):
+         daily_summary = daily_summary + (f"---- {convert_date(weather_data[_][0])} ----\n  Minimum Temperature: {format_temperature(convert_f_to_c(weather_data[_][1]))}\n  Maximum Temperature: {format_temperature(convert_f_to_c(weather_data[_][2]))}\n\n")
+    #return the completed string
+    return f"{daily_summary}"
